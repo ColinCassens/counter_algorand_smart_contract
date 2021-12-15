@@ -4,7 +4,7 @@ from algosdk import *
 
 creator_mnemonic = "REPLACE WITH MNEMONIC"
 algod_address = "http:localhost:4001"
-algod_token = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+algod_token = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
 def main():
     # Init Client
