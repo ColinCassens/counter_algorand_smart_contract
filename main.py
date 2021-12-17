@@ -1,15 +1,15 @@
 from helper import *
 from counterAlgorandSmartContract import *
-from algosdk import *
+from algosdk.v2client import *
 
-creator_mnemonic = "REPLACE WITH MNEMONIC"
-algod_address = "http:localhost:4001"
+# Todo: Remove before Commit/Push
+creator_mnemonic = "REPLACE"
+algod_address = "http://localhost:4001"
 algod_token = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
 def main():
     # Init Client
     algod_client = algod.AlgodClient(algod_token=algod_token, algod_address=algod_address)
-
     # Get Private Keys
     creator_private_key = get_private_key_from_mnemonic(creator_mnemonic)
 
@@ -18,8 +18,9 @@ def main():
     local_bytes = 0
     global_ints = 1
     global_bytes = 0
-    global_schema = transaction.StateSchema(global_ints, global_bytes)
-    local_schema = transaction.StateSchema(local_ints, local_bytes)
+
+    global_schema = future.transaction.StateSchema(global_ints, global_bytes)
+    local_schema = future.transaction.StateSchema(local_ints, local_bytes)
 
     # Compile to TEAL Assembly
     print("---------------------------------------------")
@@ -49,5 +50,18 @@ def main():
     # Read the global state
     print("Global State: ", read_global_state(algod_client,
                                               account.address_from_private_key(creator_private_key),
-                                              app_id))
+                                             app_id))
 
+def call_contract():
+    algod_client = algod.AlgodClient(algod_token=algod_token, algod_address=algod_address)
+    call_app(algod_client, get_private_key_from_mnemonic(creator_mnemonic), 2, ["Add"])
+    # Read the global state
+    print("Global State: ", read_global_state(algod_client,
+                                              account.address_from_private_key(get_private_key_from_mnemonic(creator_mnemonic)),
+                                             2))
+
+if __name__ == "__main__":
+    main()
+    call_contract()
+
+    # App Id currently is 2

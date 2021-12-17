@@ -1,14 +1,13 @@
 import base64
-
-from algosdk import *
+from algosdk import mnemonic, future, account
 
 '''
 https://developer.algorand.org/docs/get-details/dapps/pyteal/
 '''
 
 def compile_program(client, source_code):
-    compile_response = client.compile(source_code)
-    return base64.b64decode(compile_response['result'])
+    compiled_response = client.compile(source_code)
+    return base64.b64decode(compiled_response['result'])
 
 def get_private_key_from_mnemonic(mn):
     private_key = mnemonic.to_private_key(mn)
@@ -77,13 +76,13 @@ def create_app(client, private_key, approval_program, clear_program, global_sche
     sender = account.address_from_private_key(private_key)
 
     # Declare on_complete as NoOp
-    on_complete = transaction.OnComplete.NoOpOC.real
+    on_complete = future.transaction.OnComplete.NoOpOC.real
 
     # Get node suggested parameters
     params = client.suggested_params()
 
     # Create Unsigned Transaction
-    txn = transaction.ApplicationCreateTxn(sender, params, on_complete, approval_program, clear_program, global_schema, local_schema)
+    txn = future.transaction.ApplicationCreateTxn(sender, params, on_complete, approval_program, clear_program, global_schema, local_schema)
 
     # Sign Txn
     signed_txn = txn.sign(private_key)
@@ -98,8 +97,24 @@ def create_app(client, private_key, approval_program, clear_program, global_sche
     # Display results
     transaction_response = client.pending_transaction_info(txn_id)
     app_id = transaction_response['application-index']
-    print("Created new app-id", app_id)
+    print("Created new app-id:", app_id)
 
     return app_id
 
+def call_app(client, private_key, index, app_args):
+    sender = account.address_from_private_key(private_key)
+    params = client.suggested_params()
+    txn = future.transaction.ApplicationNoOpTxn(sender, params, index, app_args)
 
+    # Signature
+    signed = txn.sign(private_key)
+    txn_id = signed.transaction.get_txid()
+
+    print("Calling Smart Contract")
+    # Send
+    client.send_transactions([signed])
+
+    # Confirm
+    wait_for_confirmation(client, txn_id, 5)
+
+    print("Done")

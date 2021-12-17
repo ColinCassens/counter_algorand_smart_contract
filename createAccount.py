@@ -37,7 +37,8 @@ def update_backup():
 
 if __name__ == "__main__":
     # create_new_wallet()
-    address1 = "2I3AZ7AFOMGBI5DQG25TFBWPQ4FXFGIHG723QSZBDSXME2NTXRNRPZE2JQ"
-    address2 = "NFECT6BHMITM6QAO2J2YR4YCCOZ3YT6T3H2RVK75PB5Q4ZB6LP6EXVW7EY"
-    check_balance(address2)
+    address1 = ""
+    # address2 = ""
+    #
+    check_balance(address1)
     # update_backup()
